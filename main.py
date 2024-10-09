@@ -10,17 +10,30 @@ days = st.slider("Forecast days", min_value=1, max_value=5, help="""
     The number of forecasted days 
 """)
 
-data = st.selectbox("Select data to view", options=["Temperature", "Sky"])
+option = st.selectbox("Select data to view", options=["Temperature", "Sky"])
 
-st.subheader(f"{data} for the next {days} days in {place}")
+st.subheader(f"{option} for the next {days} days in {place}")
 
-data = get_data(place, days, option)
+if place:
+    filtered_content = get_data(place, days)
 
+    if option == "Temperature":
+        temp = [i["main"]["temp"] for i in filtered_content]
 
+        dates = [i["dt_txt"] for i in filtered_content]
 
-d, t = get_data(days)
+        figure = px.line(x=dates, y=temp, labels={"x": "Dates",
+                                                  "y": "Temperature (C)"})
 
-figure = px.line(x=d, y=t, labels={"x": "Dates",
-                                   "y": "Temperature (C)"})
+        st.plotly_chart(figure)
 
-st.plotly_chart(figure)
+    elif option == "Sky":
+        skies = [i["weather"][0]["main"] for i in filtered_content]
+
+        images = {"Clear": "images/clear.png", "Clouds": "images/cloud.png",
+                  "Rain": "images/rain.png", "Snow": "images/snow.png"}
+        dates = [i["dt_txt"] for i in filtered_content]
+
+        images_path = [images[condition] for condition in skies]
+
+        st.image(images_path, width=115)
