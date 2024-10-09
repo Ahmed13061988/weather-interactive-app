@@ -13,5 +13,5 @@ def get_data(place, days):
 
 
 if __name__ == "__main__":
-    data = get_data("Tokyo", 3, "Sky")
+    data = get_data("Tokyo", 3)
     print(data)
